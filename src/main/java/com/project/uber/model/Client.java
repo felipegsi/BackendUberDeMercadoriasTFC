@@ -10,5 +10,5 @@ public class Client extends User {
 
     //adicionar aqui a lista de metodo de pagamento
     //adicionar aqui a lista de encomendas
-//outras variaveis , PAREI AQUI
+    //outras variaveis , PAREI AQUI
 }
