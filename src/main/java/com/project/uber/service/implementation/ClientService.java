@@ -1,4 +1,4 @@
-package com.project.uber.service;
+package com.project.uber.service.implementation;
 
 import com.project.uber.model.Client;
 import com.project.uber.repository.ClientRepository;
@@ -25,19 +25,4 @@ public class ClientService {
     }
 
     // Método para login
-    public Client loginClient(String email, String password) {
-        Optional<Client> clientOpt = clientRepository.findByEmail(email);
-        if (clientOpt.isPresent()) {
-            Client client = clientOpt.get();
-            if (client.getPassword().equals(password)) {
-                return client;
-            } else {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email ou senha incorretos");
-            }
-        } else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email ou senha incorretos");
-        }
-    }
-
-
 }

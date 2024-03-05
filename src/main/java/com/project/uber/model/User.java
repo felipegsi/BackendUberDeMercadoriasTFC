@@ -14,13 +14,13 @@ public abstract class User {
     @Column(name = "name", nullable = false, length = 100)
     private String name;
 
-    @Column(name = "phoneNumber", nullable = false)
+    @Column(name = "phoneNumber", unique = true, nullable = false)
     private int phoneNumber;
 
     @Column(name = "email", unique = true, nullable = false, length = 100)//UNIQUE = true, para garantir que não haverá dois usuários com o mesmo e-mail
     private String email;
 
-    @Column(name = "taxPayerNumber", nullable = false)
+    @Column(name = "taxPayerNumber", unique = true, nullable = false)
     private int taxPayerNumber;
 
     @Column(name = "password", nullable = false)
@@ -37,5 +37,9 @@ public abstract class User {
 
     @Transient //apenas fica salvo no frontend a imagem
     private byte[] profileImage;
+
+
+
+
 
 }

@@ -2,7 +2,7 @@ package com.project.uber.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.uber.model.Client;
-import com.project.uber.service.ClientService;
+import com.project.uber.service.implementation.ClientService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
