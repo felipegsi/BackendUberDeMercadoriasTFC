@@ -1,6 +1,6 @@
 package com.project.uber.configuration;
 
-import com.project.uber.model.Client;
+
 import com.project.uber.model.Usuario;
 import com.project.uber.repository.UsuarioRepository;
 import com.project.uber.service.interfac.AutenticacaoService;
@@ -14,7 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.project.uber.repository.ClientRepository;
+
 import java.io.IOException;
 
 @Component
