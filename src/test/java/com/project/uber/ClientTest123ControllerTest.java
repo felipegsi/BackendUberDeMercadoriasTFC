@@ -1,8 +1,8 @@
 package com.project.uber.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.uber.model.Client;
-import com.project.uber.service.implementation.ClientService;
+import com.project.uber.model.ClientTest123;
+import com.project.uber.service.implementation.ClientServiceTeste123;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -14,29 +14,29 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(ClientController.class)
-public class ClientControllerTest {
+@WebMvcTest(ClientControllerTest123.class)
+public class ClientTest123ControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
-    private ClientService clientService;
+    private ClientServiceTeste123 clientServiceTeste123;
 
     @Autowired
     private ObjectMapper objectMapper;
 
     @Test
     public void testRegisterClient() throws Exception {
-        Client client = new Client();
-        client.setName("Test Client");
+        ClientTest123 clientTest123 = new ClientTest123();
+        clientTest123.setName("Test Client");
         // Configure mais campos conforme necessário
 
-        given(clientService.registerClient(client)).willReturn(client);
+        given(clientServiceTeste123.registerClient(clientTest123)).willReturn(clientTest123);
 
         mockMvc.perform(post("/api/clients/register")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(client)))
+                        .content(objectMapper.writeValueAsString(clientTest123)))
                 .andExpect(status().isOk());
         // Verificações adicionais podem ser feitas aqui
     }

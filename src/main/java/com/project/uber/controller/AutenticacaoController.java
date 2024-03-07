@@ -8,7 +8,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.web.bind.annotation.*;
 
 import com.project.uber.dtos.AuthDto;
-import com.project.uber.service.interfac.AutenticacaoService;
+import com.project.uber.service.interfac.AuthenticationService;
 
 @RestController
 @RequestMapping("/auth")
@@ -19,16 +19,16 @@ public class AutenticacaoController {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private AutenticacaoService autenticacaoService;
+    private AuthenticationService authenticationService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
-    public String  auth(@RequestBody AuthDto authDto) {
+    public String auth(@RequestBody AuthDto authDto) {
 
-        var usuarioAutenticationToken = new UsernamePasswordAuthenticationToken(authDto.login(), authDto.senha());
+        var usuarioAutenticationToken = new UsernamePasswordAuthenticationToken(authDto.email(), authDto.password());
 
         authenticationManager.authenticate(usuarioAutenticationToken);
 
-        return autenticacaoService.obterToken(authDto);
+        return authenticationService.getTokenJwt(authDto);
     }
 }

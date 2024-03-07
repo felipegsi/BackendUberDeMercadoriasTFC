@@ -1,9 +1,9 @@
 package com.project.uber.configuration;
 
 
-import com.project.uber.model.Usuario;
-import com.project.uber.repository.UsuarioRepository;
-import com.project.uber.service.interfac.AutenticacaoService;
+import com.project.uber.model.Client;
+import com.project.uber.repository.ClientRepository;
+import com.project.uber.service.interfac.AuthenticationService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,10 +20,10 @@ import java.io.IOException;
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
     @Autowired
-    private AutenticacaoService autenticacaoService;
+    private AuthenticationService authenticationService;
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private ClientRepository clientRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -32,10 +32,10 @@ public class SecurityFilter extends OncePerRequestFilter {
         String token = extraiTokeHeader(request);
 
         if (token != null) {
-            String login = autenticacaoService.validaTokenJwt(token);
-            Usuario usuario = usuarioRepository.findByLogin(login);
+            String login = authenticationService.validateTokenJwt(token);
+            Client client = clientRepository.findByEmail(login);
 
-            var autentication = new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());
+            var autentication = new UsernamePasswordAuthenticationToken(client, null, client.getAuthorities());
 
             SecurityContextHolder.getContext().setAuthentication(autentication);
         }

@@ -1,4 +1,4 @@
 package com.project.uber.dtos;
 
-public record AuthDto(String login, String senha) {
+public record AuthDto(String email, String password) {
 }
