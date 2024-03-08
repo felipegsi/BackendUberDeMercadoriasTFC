@@ -36,18 +36,10 @@ public class Client implements UserDetails {
         //this.role = role;
     }
 
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        /*if (this.role == RoleEnum.ADMIN) {
-            return List.of(
-                    new SimpleGrantedAuthority("ROLE_ADMIN"),
-                    new SimpleGrantedAuthority("ROLE_USER")
-            );
-        }
-        return List.of(
-                new SimpleGrantedAuthority("ROLE_USER")
-        );*/
-        return new ArrayList<>();
+        return null;
     }
 
     @Override

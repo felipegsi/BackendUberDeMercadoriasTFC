@@ -29,11 +29,11 @@ public class SecurityFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String token = extraiTokeHeader(request);
+        String token = extractTokeHeader(request);
 
         if (token != null) {
-            String login = authenticationService.validateTokenJwt(token);
-            Client client = clientRepository.findByEmail(login);
+            String email = authenticationService.validateTokenJwt(token);
+            Client client = clientRepository.findByEmail(email);
 
             var autentication = new UsernamePasswordAuthenticationToken(client, null, client.getAuthorities());
 
@@ -43,7 +43,7 @@ public class SecurityFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    public String extraiTokeHeader(HttpServletRequest request) {
+    public String extractTokeHeader(HttpServletRequest request) {
         var authHeader = request.getHeader("Authorization");
 
         if (authHeader == null) {
