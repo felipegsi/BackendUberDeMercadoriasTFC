@@ -44,14 +44,10 @@ public class ClientController {
     }
     //quero que ao fazer o login, entao apareça os dados do usuario
 
-
-
     @GetMapping("/validate")
     @ResponseStatus(HttpStatus.OK)
     public String validate(@RequestHeader("Authorization") String token) {
         return authenticationService.validateTokenJwt(token);
     }
-
-
 
 }
