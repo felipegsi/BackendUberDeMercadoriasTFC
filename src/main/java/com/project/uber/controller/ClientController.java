@@ -11,6 +11,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
+//notas: logout no front-end, e no back-end, o token é invalidado.
+//implementar a mudança de senha
+//implementar a recuperação de senha
 @RestController
 @RequestMapping("/client")
 public class ClientController {
@@ -49,19 +52,6 @@ public class ClientController {
         return authenticationService.validateTokenJwt(token);
     }
 
-    //ver o perfil do usuario
-    @GetMapping("/profile")
-    @ResponseStatus(HttpStatus.OK)
-    public String profile(@RequestHeader("Authorization") String token) {
-        return authenticationService.validateTokenJwt(token);
-    }
 
-
-    //atualizar o perfil do usuario
-    @PutMapping("/profile")
-    @ResponseStatus(HttpStatus.OK)
-    public String updateProfile(@RequestHeader("Authorization") String token) {
-        return authenticationService.validateTokenJwt(token);
-    }
 
 }

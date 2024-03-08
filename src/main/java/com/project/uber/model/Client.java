@@ -15,7 +15,7 @@ import java.util.Collection;
 @NoArgsConstructor
 @Entity
 @Table(name = "TB_USUARIO")
-public class Client implements UserDetails {
+public class Client extends User implements UserDetails {
 
     @Id
     @GeneratedValue
