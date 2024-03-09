@@ -20,7 +20,7 @@ import com.project.uber.dtos.AuthDto;
 import com.project.uber.service.interfac.AuthenticationService;
 
 @Service
-public class AuthenticationServiceImpl implements AuthenticationService {
+public class AuthenticationServiceImpl implements AuthenticationService{
 
     @Autowired
     private ClientRepository clientRepository;

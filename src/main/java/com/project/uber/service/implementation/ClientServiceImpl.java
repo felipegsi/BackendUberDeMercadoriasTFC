@@ -60,7 +60,7 @@ public class ClientServiceImpl implements ClientService {
         Client client = clientRepository.findByEmail(email);
 
         if (client == null) {
-            throw new UsernameNotFoundException("Email não encontrado");
+            throw new BusinessException("Email não encontrado");
         }
 
         // Construa a nova entidade Order com os dados de OrderDto
