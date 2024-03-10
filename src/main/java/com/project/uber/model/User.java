@@ -89,4 +89,7 @@ public abstract class User implements UserDetails {
         return true;
     }
 
+    //getPrincipal() -> retorna o usuário logado
+
+
 }

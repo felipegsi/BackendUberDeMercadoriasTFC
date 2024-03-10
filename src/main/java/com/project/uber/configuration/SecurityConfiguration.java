@@ -31,6 +31,7 @@ public class SecurityConfiguration {
                         //.requestMatchers(HttpMethod.GET, "/usuarios/user").hasRole("USER")
                         .requestMatchers(HttpMethod.POST, "/client/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/client/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/client/{clientId}/orderHistory").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

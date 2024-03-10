@@ -10,12 +10,13 @@ import com.project.uber.repository.ClientRepository;
 import com.project.uber.repository.OrderRepository;
 import com.project.uber.service.interfac.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ClientServiceImpl implements ClientService {
@@ -28,7 +29,6 @@ public class ClientServiceImpl implements ClientService {
 
     @Autowired
     private OrderRepository orderRepository;
-
 
     @Override
     public ClientDto saveClient(ClientDto clientDto) {
@@ -51,8 +51,6 @@ public class ClientServiceImpl implements ClientService {
                 newClient.getPhoneNumber(), newClient.getTaxPayerNumber(), newClient.getStreet(),
                 newClient.getCity(), newClient.getPostalCode());
     }
-
-
 
     @Override
     public Order createOrder(OrderDto orderDto, String email) {
@@ -81,6 +79,30 @@ public class ClientServiceImpl implements ClientService {
         return orderRepository.save(order);
     }
 
+    @Override
+    public List<OrderDto> getOrderHistory(Long clientId) {
+           List<Order> orders = orderRepository.findByClientId(clientId);
+        System.out.println("\n\n\n\n\n\norders = " + orders);
+        System.out.println("clientId = " + clientId);
+        System.out.println(
+                "orders.stream().map(this::convertToOrderDto).collect(Collectors.toList()) = " + orders.stream().map(this::convertToOrderDto).collect(Collectors.toList())
+        );
+        System.out.println("entrou aqui\n\n\n\n\n\n");
+            return orders.stream()
+                    .map(this::convertToOrderDto)
+                    .collect(Collectors.toList());
+    }
+
+    private OrderDto convertToOrderDto(Order order) {
+        // Implemente a conversão aqui
+        return new OrderDto(
+                order.getOrigin(),
+                order.getDestination(),
+                order.getValue(),
+                order.getDescription(),
+                order.getFeedback()
+        );
+    }
 
 
 }
