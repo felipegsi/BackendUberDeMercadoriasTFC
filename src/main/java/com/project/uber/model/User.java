@@ -13,7 +13,6 @@ import java.util.Collection;
 @NoArgsConstructor
 @Data
 public abstract class User implements UserDetails {
-
     @Id
     @GeneratedValue
     private Long id;
@@ -51,10 +50,6 @@ public abstract class User implements UserDetails {
         this.postalCode = postalCode;
         //this.role = role;
     }
-
-
-
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;

@@ -2,9 +2,7 @@ package com.project.uber.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.project.uber.enums.OrderStatus;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.project.uber.enums.PaymentMethod; // Certifique-se de que este enum está definido
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
@@ -15,7 +13,7 @@ import java.time.LocalTime;
 
 @Entity
 @Data
-@Table(name = "orders") // Use snake_case ou camelCase consistentemente em nomes de tabelas e colunas conforme a convenção do seu BD
+@Table(name = "orders") // Prefira usar um padrão consistente para nomes de tabelas e colunas, seja snake_case ou camelCase
 public class Order {
 
     @Id
@@ -28,11 +26,11 @@ public class Order {
     @Column(nullable = false, length = 150)
     private String destination;
 
-    @Column(nullable = false, precision = 10, scale = 2) // precision e scale podem ser ajustados conforme a necessidade
-    private BigDecimal value; // Use BigDecimal para valores monetários
+    @Column(nullable = false, precision = 10, scale = 2) // Ajuste precision e scale conforme necessário
+    private BigDecimal value; // BigDecimal é adequado para valores monetários
 
     @Enumerated(EnumType.STRING)
-    private OrderStatus status; // Supondo que você tem um enum OrderStatus
+    private OrderStatus status; // Supondo a existência de um enum OrderStatus
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
@@ -42,31 +40,29 @@ public class Order {
     @CreationTimestamp
     private LocalTime time; // Hora de criação
 
-    @Column(length = 500) // Tamanho ajustado conforme a necessidade de armazenamento
+    @Column(length = 500) // Ajuste o tamanho conforme necessário
     private String description;
 
-    @Column(length = 1000) // Permita um feedback mais longo se necessário
+    @Column(length = 1000) // Permita um feedback mais longo, se necessário
     private String feedback;
 
     @JsonManagedReference
     @ManyToOne
-    @JoinColumn(name = "client_id")// Define a coluna de chave estrangeira na tabela 'orders'
+    @JoinColumn(name = "client_id") // Chave estrangeira na tabela 'orders'
     private Client client;
 
-}
-    /*
+    // Campos adicionados conforme sugerido
     @Enumerated(EnumType.STRING)
-    private PaymentMethod payment; // Supondo que você tem um enum PaymentMethod
+    private PaymentMethod payment; // Supondo que você tenha um enum PaymentMethod
 
     @ManyToOne
+    @JoinColumn(name = "driver_id") // Define a coluna de chave estrangeira para Driver
     private Driver driver;
 
     @ManyToOne
+    @JoinColumn(name = "vehicle_id") // Define a coluna de chave estrangeira para Vehicle
     private Vehicle vehicle;
 
-    private Integer rating; // Considerando que o rating é um número
-
-
-    */
-
-
+    @Column(nullable = true) // Avaliações podem não estar presentes imediatamente
+    private Integer rating; // Considerando rating como um número
+}
