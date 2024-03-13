@@ -41,7 +41,7 @@ public class DriverController {
     private DriverDto save(@RequestBody DriverDto driverDto) {
         return  driverService.saveDriver(driverDto) ;
     }
-
+/*
     @PostMapping("/login")
     public ResponseEntity<?> auth(@RequestBody AuthDto authDto) {
         try {
@@ -115,6 +115,6 @@ public class DriverController {
 
         List<OrderDto> transportHistory = driverService.getOrderHistory(driverId);
         return new ResponseEntity<>(transportHistory, HttpStatus.OK);
-    }
+    }*/
 
 }
