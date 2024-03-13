@@ -53,13 +53,13 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public Order createOrder(OrderDto orderDto, String email) {
+    public Order createOrder(OrderDto orderDto, Long clientId) {
         // Localize o cliente pelo email
-        Client client = clientRepository.findByEmail(email);
 
-        if (client == null) {
-            throw new BusinessException("Email não encontrado");
-        }
+
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new BusinessException("Client not found"));
+
 
         // Construa a nova entidade Order com os dados de OrderDto
         Order order = new Order();
@@ -81,13 +81,9 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public List<OrderDto> getOrderHistory(Long clientId) {
+        // Localize todos os pedidos do cliente pelo ID do cliente
            List<Order> orders = orderRepository.findByClientId(clientId);
-        System.out.println("\n\n\n\n\n\norders = " + orders);
-        System.out.println("clientId = " + clientId);
-        System.out.println(
-                "orders.stream().map(this::convertToOrderDto).collect(Collectors.toList()) = " + orders.stream().map(this::convertToOrderDto).collect(Collectors.toList())
-        );
-        System.out.println("entrou aqui\n\n\n\n\n\n");
+
             return orders.stream()
                     .map(this::convertToOrderDto)
                     .collect(Collectors.toList());
@@ -102,6 +98,21 @@ public class ClientServiceImpl implements ClientService {
                 order.getDescription(),
                 order.getFeedback()
         );
+    }
+
+    @Override
+    public void deleteClient(Long clientId) {
+        clientRepository.deleteById(clientId);
+    }
+
+    @Override
+    public void changePassword(String email, String newPassword) {
+        Client client = clientRepository.findByEmail(email);
+        if (client == null) {
+            throw new BusinessException("Email não encontrado");
+        }
+        client.setPassword(passwordEncoder.encode(newPassword));
+        clientRepository.save(client);
     }
 
 

@@ -10,6 +10,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+//@EqualsAndHashCode(exclude = {"orders"})  //n precisa do jsonignore
 @NoArgsConstructor
 @Entity
 @Table(name = "clients")

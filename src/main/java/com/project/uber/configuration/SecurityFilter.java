@@ -32,7 +32,7 @@ public class SecurityFilter extends OncePerRequestFilter {
         String token = extractTokeHeader(request);
 
         if (token != null) {
-            String email = authenticationService.validateTokenJwt(token);
+            String email = authenticationService.getClientEmailFromToken(token);
             Client client = clientRepository.findByEmail(email);
 
             var autentication = new UsernamePasswordAuthenticationToken(client, null, client.getAuthorities());

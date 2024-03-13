@@ -33,6 +33,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/client/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/client/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/client/{clientId}/orderHistory").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/client/{clientId}/deleteClient").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
