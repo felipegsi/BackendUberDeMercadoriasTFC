@@ -20,7 +20,6 @@ public class Client extends User {
     @OneToMany(mappedBy = "client")
     private List<Order> orders;
 
-
     public Client(String name, String email, String password,
                   int phoneNumber, int taxPayerNumber, String street,
                   String city, int postalCode) {

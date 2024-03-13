@@ -32,7 +32,12 @@ public class SecurityConfiguration {
                         //so altera AQUI
                         .requestMatchers(HttpMethod.POST, "/client/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/client/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/client/createOrder").permitAll()
                         .requestMatchers(HttpMethod.POST, "/client/{clientId}/orderHistory").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/driver/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/driver/login").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "driver/{driverId}/orders/{orderId}/accept").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/driver/{driverId}/orderHistory").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

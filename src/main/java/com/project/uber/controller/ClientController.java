@@ -41,7 +41,6 @@ public class ClientController {
     @Autowired
     private ClientRepository clientRepository;
 
-
     @PostMapping("/register")
     private ClientDto save(@RequestBody ClientDto clientDto) {
         return  clientService.saveClient(clientDto) ;
@@ -119,11 +118,6 @@ public class ClientController {
             List<OrderDto> transportHistory = clientService.getOrderHistory(clientId);
             return new ResponseEntity<>(transportHistory, HttpStatus.OK);
         }
-
-
-
-
-
 
 
 }
