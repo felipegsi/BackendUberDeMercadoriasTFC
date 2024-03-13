@@ -32,6 +32,7 @@ public abstract class User implements UserDetails {
     private String city;
     @Column(nullable = false, length = 20)
     private int postalCode;
+
     //@Transient //apenas fica salvo no frontend a imagem
     //private byte[] profileImage;
 
