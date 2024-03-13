@@ -39,7 +39,6 @@ public class ClientController {
     @Autowired
     private ClientRepository clientRepository;
 
-
     @PostMapping("/register")
     private ClientDto save(@RequestBody ClientDto clientDto) {
         try {
@@ -155,9 +154,4 @@ public class ClientController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
-
-
-
-    // usar tudo com o client id
 }
