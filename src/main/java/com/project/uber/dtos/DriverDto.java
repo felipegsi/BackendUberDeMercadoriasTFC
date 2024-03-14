@@ -7,7 +7,7 @@ import java.util.List;
 public record DriverDto(String name,
                         String email,
                         String password,
-                        int phoneNumber,
+                        String phoneNumber,
                         int taxPayerNumber,
                         String street,
                         String city,

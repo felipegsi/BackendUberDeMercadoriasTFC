@@ -30,6 +30,10 @@ public class ClientServiceImpl implements ClientService {
     @Autowired
     private OrderRepository orderRepository;
 
+   // @Autowired
+   // private JavaMailSender mailSender;
+
+
     @Override
     public ClientDto saveClient(ClientDto clientDto) {
 
@@ -102,18 +106,50 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public void deleteClient(Long clientId) {
+
         clientRepository.deleteById(clientId);
     }
 
     @Override
-    public void changePassword(String email, String newPassword) {
-        Client client = clientRepository.findByEmail(email);
-        if (client == null) {
-            throw new BusinessException("Email não encontrado");
+    public void changePassword(Long clientId, String oldPassword, String newPassword) {
+
+        Client client = clientRepository.findById(clientId).orElseThrow(() -> new BusinessException("Client not found"));
+        if (!passwordEncoder.matches(oldPassword, client.getPassword())) {
+            throw new BusinessException("Invalid password");
         }
+
         client.setPassword(passwordEncoder.encode(newPassword));
         clientRepository.save(client);
     }
+
+
+    @Override
+    public ClientDto viewProfile(Long clientId) {
+        Client client = clientRepository.findById(clientId).orElseThrow(() -> new BusinessException("Client not found"));
+        return new ClientDto(client.getName(), client.getEmail(), client.getPassword(),
+                client.getPhoneNumber(), client.getTaxPayerNumber(), client.getStreet(),
+                client.getCity(), client.getPostalCode());
+    }
+
+    @Override
+    public ClientDto editProfile(Long clientId, ClientDto clientDto) {
+        Client client = clientRepository.findById(clientId).orElseThrow(() -> new BusinessException("Client not found"));
+        client.setName(clientDto.name());
+        //tratar os erros
+
+        client.setEmail(clientDto.email());
+        client.setPhoneNumber(clientDto.phoneNumber());
+        client.setTaxPayerNumber(clientDto.taxPayerNumber());
+        client.setStreet(clientDto.street());
+        client.setCity(clientDto.city());
+        client.setPostalCode(clientDto.postalCode());
+        clientRepository.save(client);
+        return new ClientDto(client.getName(), client.getEmail(), client.getPassword(),
+                client.getPhoneNumber(), client.getTaxPayerNumber(), client.getStreet(),
+                client.getCity(), client.getPostalCode());
+    }
+
+
 
 
 }

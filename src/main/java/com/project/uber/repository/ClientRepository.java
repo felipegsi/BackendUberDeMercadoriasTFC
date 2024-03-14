@@ -9,11 +9,10 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
 
     Client findByEmail(String email);//felipe@
 
-// encontrar cliente por id
-    Client findById(int id);
+    //find by client id
+    Client findById(long id);
 
 
-    Client findByPhoneNumber(int phone);
 
 
 }

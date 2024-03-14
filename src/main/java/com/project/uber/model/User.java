@@ -23,7 +23,7 @@ public abstract class User implements UserDetails {
     @Column(nullable = false)
     private String password;
     @Column(nullable = false, unique = true)
-    private int phoneNumber;
+    private String phoneNumber;
     @Column(nullable = false, unique = true)
     private int taxPayerNumber;
     @Column(nullable = false, length = 100)
@@ -39,10 +39,26 @@ public abstract class User implements UserDetails {
     //@Column(nullable = false)
     //private RoleEnum role;
 
-    public User(String name, String email, String password, int phoneNumber, int taxPayerNumber, String street, String city, int postalCode) {
+    public User(String name, String email, String password,
+                String phoneNumber, int taxPayerNumber,
+                String street, String city, int postalCode) {// contrutor com todos os atributos
         this.name = name;
         this.email = email;
         this.password = password;
+        this.phoneNumber = phoneNumber;
+        this.taxPayerNumber = taxPayerNumber;
+        this.street = street;
+        this.city = city;
+        this.postalCode = postalCode;
+        //this.role = role;
+    }
+
+    public User(String name, String email , String phoneNumber, //construtor sem a password
+                int taxPayerNumber, String street,
+                String city, int postalCode) {
+        this.name = name;
+        this.email = email;
+        //this.password = password;
         this.phoneNumber = phoneNumber;
         this.taxPayerNumber = taxPayerNumber;
         this.street = street;

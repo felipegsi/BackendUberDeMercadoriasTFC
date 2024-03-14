@@ -5,7 +5,7 @@ public record ClientDto(
         String name,
         String email,
         String password,
-        int phoneNumber,
+        String phoneNumber,
         int taxPayerNumber,
         String street,
         String city,

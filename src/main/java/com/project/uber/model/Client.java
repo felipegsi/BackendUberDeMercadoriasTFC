@@ -22,9 +22,16 @@ public class Client extends User {
     private List<Order> orders;
 
     public Client(String name, String email, String password,
-                  int phoneNumber, int taxPayerNumber, String street,
+                  String phoneNumber, int taxPayerNumber, String street,
                   String city, int postalCode) {
         super(name, email, password, phoneNumber, taxPayerNumber, street,
+                city, postalCode);
+    }
+
+    public Client(String name, String email,
+                  String phoneNumber, int taxPayerNumber, String street,
+                  String city, int postalCode) {
+        super(name, email, phoneNumber, taxPayerNumber, street,
                 city, postalCode);
     }
 
