@@ -3,6 +3,7 @@ package com.project.uber.configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -19,8 +20,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfiguration {
 
+
+     private final SecurityFilter securityFilter;
+
     @Autowired
-    private SecurityFilter securityFilter;
+    @Lazy
+    public SecurityConfiguration( SecurityFilter securityFilter) {
+
+        this.securityFilter = securityFilter;
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
@@ -32,11 +41,15 @@ public class SecurityConfiguration {
                         //so altera AQUI
                         .requestMatchers(HttpMethod.POST, "/client/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/client/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/client/{clientId}/orderHistory").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/client/{clientId}/deleteClient").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/client/orderHistory").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/client/deleteClient").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/client/sendSimpleMessage").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/driver/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/driver/login").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
+               // .addFilterBefore(driverSecurityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

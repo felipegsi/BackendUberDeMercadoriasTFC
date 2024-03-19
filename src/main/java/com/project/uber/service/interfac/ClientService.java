@@ -2,7 +2,7 @@ package com.project.uber.service.interfac;
 
 import com.project.uber.dtos.ClientDto;
 import com.project.uber.dtos.OrderDto;
-import com.project.uber.model.Order;
+import com.project.uber.model.Client;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -11,11 +11,10 @@ public interface ClientService {
 
     public ClientDto saveClient(ClientDto clientDto);
 
-    public Order createOrder(OrderDto orderDto, Long clientId);
-
-    public List<OrderDto> getOrderHistory(Long clientId);
-
     public void deleteClient(Long clientId);
+
+    Client getClientById(Long clientId);
+    Client getClientByEmail(String email);
 
     public void changePassword(Long clientId, String oldPassword, String newPassword);
 
@@ -23,6 +22,7 @@ public interface ClientService {
     public ClientDto editProfile(Long clientId, ClientDto clientDto);
 
     public ClientDto viewProfile(Long clientId);
+
 
     //quais outras funcionalidades o cliente pode ter?
     //criar um pedido - semi-implementado

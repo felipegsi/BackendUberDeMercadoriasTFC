@@ -1,16 +1,12 @@
 package com.project.uber.controller;
 
-import com.project.uber.dtos.AuthDto;
-import com.project.uber.dtos.ChangePasswordDto;
-import com.project.uber.dtos.ClientDto;
-import com.project.uber.dtos.OrderDto;
-import com.project.uber.infra.exceptions.ApiError;
+import com.project.uber.dtos.*;
 import com.project.uber.infra.exceptions.BusinessException;
-import com.project.uber.model.Order;
-import com.project.uber.repository.ClientRepository;
+import com.project.uber.service.implementation.EmailServiceImpl;
 import com.project.uber.service.interfac.AuthenticationService;
 import com.project.uber.service.interfac.ClientService;
 
+import com.project.uber.service.interfac.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,17 +24,29 @@ import java.util.List;
 @RequestMapping("/client")
 public class ClientController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
 
-    @Autowired
-    private AuthenticationService authenticationService;
+        private final AuthenticationManager authenticationManager;
 
-    @Autowired
-    private ClientService clientService;
+        private final AuthenticationService authenticationService;
+        private final ClientService clientService;
+        private final EmailServiceImpl emailService;
+        private final OrderService orderService;
 
-    @Autowired
-    private ClientRepository clientRepository;
+        @Autowired
+        public ClientController(AuthenticationManager authenticationManager,
+
+                                ClientService clientService,
+                                EmailServiceImpl emailService,
+                                OrderService orderService, AuthenticationService authenticationService) {
+            this.authenticationManager = authenticationManager;
+
+            this.clientService = clientService;
+            this.emailService = emailService;
+            this.orderService = orderService;
+            this.authenticationService = authenticationService;
+        }
+
+
 
     @PostMapping("/register")
     private ClientDto save(@RequestBody ClientDto clientDto) {
@@ -47,7 +55,7 @@ public class ClientController {
             return clientService.saveClient(clientDto);
         } catch (BusinessException e) {
             // Retorna um erro 400 (BAD REQUEST) com a mensagem de erro
-            throw new BusinessException("Error registering client " + e.getMessage());
+            throw new BusinessException("Error registering client: " + e.getMessage());
         }
     }
 
@@ -60,8 +68,33 @@ public class ClientController {
             return ResponseEntity.ok(token);
         } catch (AuthenticationException e) {
             // Lançar BusinessException se a autenticação falhar
-            throw new BusinessException("Email ou senha inválidos." + e.getMessage());
+            throw new BusinessException("Error registering client:" + e.getMessage());
         }
+    }
+
+    @GetMapping("/viewProfile")
+    public ResponseEntity<?> viewProfile(
+            @RequestHeader("Authorization") String authorizationHeader) {
+        // Extract the token from the header
+        String token = authorizationHeader.substring("Bearer ".length());
+        // Valida o token e obtém o username (subject do token)
+        Long clientId = validateTokenAndGetClientId(token);
+
+        ClientDto clientDto = clientService.viewProfile(clientId);
+        return new ResponseEntity<>(clientDto, HttpStatus.OK);
+    }
+
+    @PostMapping("/editProfile")
+    public ResponseEntity<?> editProfile(
+            @RequestBody ClientDto clientDto, // aqui eu que vou inserir os dados que quero alterar
+            @RequestHeader("Authorization") String authorizationHeader) {
+        // Extract the token from the header
+        String token = authorizationHeader.substring("Bearer ".length());
+        // Valida o token e obtém o username (subject do token)
+        Long clientId = validateTokenAndGetClientId(token);
+
+        ClientDto newClient = clientService.editProfile(clientId, clientDto);
+        return new ResponseEntity<>(newClient, HttpStatus.OK);
     }
 
     @GetMapping("/validate")
@@ -93,7 +126,7 @@ public class ClientController {
             }
 
             // Cria o pedido usando o email obtido do token
-            Order order = clientService.createOrder(orderDto, clientId);
+            OrderDto order = orderService.saveOrder(orderDto, clientId);
 
             // Retorna a entidade Order recém-criada ou outro DTO que represente o resultado do pedido
             return ResponseEntity.status(HttpStatus.CREATED).body(order);
@@ -121,10 +154,10 @@ public class ClientController {
             // Valida o token e obtém o username (subject do token)
             Long clientId = validateTokenAndGetClientId(token);
 
-            List<OrderDto> transportHistory = clientService.getOrderHistory(clientId);
-            return new ResponseEntity<>(transportHistory, HttpStatus.OK);
+            List<OrderDto> orderHistory = orderService.getClientOrderHistory(clientId);
+            return new ResponseEntity<>(orderHistory, HttpStatus.OK);
         } catch (BusinessException e) {
-            throw new BusinessException("Error getting order history " + e.getMessage());
+            throw new BusinessException(e.getMessage());
         }
     }
 
@@ -146,12 +179,6 @@ public class ClientController {
         }
 
     }
-    //se no email ja extraio o respectivo email do cliente, entao nao preciso passar o id do cliente como parametro?
-    // é melhor usar uma classe dto para o change password?
-    //fazer o mesmo para as funçoes acima
-    //dto cliente sem password
-    //numero para string no user
-    //por umtimo impl o modelmapper
 
     @PostMapping("/changePassword")
     public ResponseEntity<?> changePassword(
@@ -167,14 +194,19 @@ public class ClientController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+
+
+
+    // ---------------- Semi-implementado ----------------
+
     /*
     1. Primeiro, você precisa verificar se o e-mail fornecido existe no banco de dados. Se não existir, você pode retornar um erro.
     2. Se o e-mail existir, você pode gerar um token de redefinição de senha. Este token deve ser único e temporário.
     3. Em seguida, você precisa enviar este token para o e-mail do usuário. Você pode usar um serviço de e-mail para fazer isso.
     4. Quando o usuário clicar no link enviado para o e-mail, ele será redirecionado para uma página onde poderá inserir a nova senha. Esta página deve ser implementada no front-end.
     5. No back-end, você precisa de um método para validar o token e redefinir a senha.
-
     */
+
     @PostMapping("/recoverPassword")
     public ResponseEntity<?> recoverPassword(
             @RequestBody String email) {
@@ -183,30 +215,13 @@ public class ClientController {
     }
 
 
-    @GetMapping("/viewProfile")
-    public ResponseEntity<?> viewProfile(
-            @RequestHeader("Authorization") String authorizationHeader) {
-        // Extract the token from the header
-        String token = authorizationHeader.substring("Bearer ".length());
-        // Valida o token e obtém o username (subject do token)
-        Long clientId = validateTokenAndGetClientId(token);
-
-        ClientDto clientDto = clientService.viewProfile(clientId);
-        return new ResponseEntity<>(clientDto, HttpStatus.OK);
+    @PostMapping("/sendSimpleMessage")
+    public ResponseEntity<Void> sendSimpleMessage(@RequestBody EmailDto emailDto) {
+        emailService.sendSimpleMessage(emailDto);
+        return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/editProfile")
-    public ResponseEntity<?> editProfile(
-            @RequestBody ClientDto clientDto, // aqui eu que vou inserir os dados que quero alterar
-            @RequestHeader("Authorization") String authorizationHeader) {
-        // Extract the token from the header
-        String token = authorizationHeader.substring("Bearer ".length());
-        // Valida o token e obtém o username (subject do token)
-        Long clientId = validateTokenAndGetClientId(token);
 
-        ClientDto newClient = clientService.editProfile(clientId, clientDto);
-        return new ResponseEntity<>(newClient, HttpStatus.OK);
-    }
 
 
 }

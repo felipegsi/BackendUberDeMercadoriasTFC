@@ -18,17 +18,24 @@ public class Driver extends User {
     @Column(name = "availability")
     private Boolean availability;
 
-    @OneToMany(mappedBy = "driver")
-    private List<Vehicle> vehicles; // Corrigido o mapeamento
+   // @OneToMany(mappedBy = "driver")
+   // private List<Vehicle> vehicles; // Corrigido o mapeamento
 
 
-    public Driver(String name, String email, String password, String phoneNumber, int taxPayerNumber, String street, String city, int postalCode, byte[] criminalRecord,List<Vehicle> vehicles) {
-        super(name, email, password, phoneNumber, taxPayerNumber, street, city, postalCode);
+    public Driver(String name, String email, String password,
+                  String phoneNumber, int taxPayerNumber, String street,
+                  String city, int postalCode, byte[] criminalRecord
+                  //List<Vehicle> vehicles
+                  ) {
+        super(name, email, password, phoneNumber, taxPayerNumber, street,
+                city, postalCode);
         this.criminalRecord = criminalRecord;
-        this.vehicles = vehicles;
+       // this.vehicles = vehicles;
     }
 
     public Driver() {
 
     }
+
+
 }

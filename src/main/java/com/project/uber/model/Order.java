@@ -26,8 +26,8 @@ public class Order {
     @Column(nullable = false, length = 150)
     private String destination;
 
-    @Column(nullable = false, precision = 10, scale = 2) // Ajuste precision e scale conforme necessário
-    private BigDecimal value; // BigDecimal é adequado para valores monetários
+    @Column(nullable = true) // Ajuste precision e scale conforme necessário
+    private BigDecimal  value; // BigDecimal é adequado para valores monetários
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status; // Supondo a existência de um enum OrderStatus
@@ -40,10 +40,10 @@ public class Order {
     @CreationTimestamp
     private LocalTime time; // Hora de criação
 
-    @Column(length = 500) // Ajuste o tamanho conforme necessário
+    @Column(nullable = true, length = 500) // Ajuste o tamanho conforme necessário
     private String description;
 
-    @Column(length = 1000) // Permita um feedback mais longo, se necessário
+    @Column(nullable = true, length = 1000) // Permita um feedback mais longo, se necessário
     private String feedback;
 
     @JsonManagedReference
@@ -52,17 +52,35 @@ public class Order {
     private Client client;
 
     // Campos adicionados conforme sugerido
-    @Enumerated(EnumType.STRING)
-    private PaymentMethod payment; // Supondo que você tenha um enum PaymentMethod
+    //@Enumerated(EnumType.STRING)
+   // private PaymentMethod payment; // Supondo que você tenha um enum PaymentMethod
 
-    @ManyToOne
-    @JoinColumn(name = "driver_id") // Define a coluna de chave estrangeira para Driver
-    private Driver driver;
+   // @ManyToOne
+   // @JoinColumn(name = "driver_id") // Define a coluna de chave estrangeira para Driver
+   // private Driver driver;
 
-    @ManyToOne
-    @JoinColumn(name = "vehicle_id") // Define a coluna de chave estrangeira para Vehicle
-    private Vehicle vehicle;
+    // @ManyToOne
+     // @JoinColumn(name = "vehicle_id") // Define a coluna de chave estrangeira para Vehicle
+    //private Vehicle vehicle;
 
-    @Column(nullable = true) // Avaliações podem não estar presentes imediatamente
-    private Integer rating; // Considerando rating como um número
+    // @Column(nullable = true) // Avaliações podem não estar presentes imediatamente
+    // private Integer rating; // Considerando rating como um número
+
+    //contructor
+    public Order(String origin, String destination, BigDecimal  value, OrderStatus status, LocalDate date, LocalTime time, String description, String feedback, Client client) {
+        this.origin = origin;
+        this.destination = destination;
+        this.value = value;
+        this.status = status;
+        this.date = date;
+        this.time = time;
+        this.description = description;
+        this.feedback = feedback;
+        this.client = client;
+    }
+
+    public Order() {
+    }
+
+
 }

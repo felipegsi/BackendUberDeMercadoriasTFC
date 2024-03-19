@@ -28,11 +28,6 @@ public class Client extends User {
                 city, postalCode);
     }
 
-    public Client(String name, String email,
-                  String phoneNumber, int taxPayerNumber, String street,
-                  String city, int postalCode) {
-        super(name, email, phoneNumber, taxPayerNumber, street,
-                city, postalCode);
-    }
+
 
 }

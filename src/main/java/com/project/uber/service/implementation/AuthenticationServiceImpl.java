@@ -30,13 +30,13 @@ public class AuthenticationServiceImpl implements AuthenticationService{
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return clientRepository.findByEmail(email);
     }
-// --------------------------- CLIENT ---------------------------
+    // --------------------------- CLIENT ---------------------------
     @Override
     public String getClientTokenJwt(AuthDto authDto) {
         Client client = clientRepository.findByEmail(authDto.email());
         return generateClientTokenJwt(client);
     }
-// fgsgasggargsgrgar - email, id , senha, telefone, cpf, rua, cidade, cep
+    // fgsgasggargsgrgar - email, id , senha, telefone, cpf, rua, cidade, cep
     public  String generateClientTokenJwt(Client client) {
         try {
             Algorithm algorithm = Algorithm.HMAC256("my-secret");

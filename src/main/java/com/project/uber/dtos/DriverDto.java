@@ -12,5 +12,6 @@ public record DriverDto(String name,
                         String street,
                         String city,
                         int postalCode,
-                        byte[] criminalRecord,
-                        List<Vehicle> vehicles) { }
+                        byte[] criminalRecord
+                      //  List<Vehicle> vehicles
+) { }
