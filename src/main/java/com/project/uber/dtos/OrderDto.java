@@ -5,20 +5,27 @@ import com.project.uber.enums.PaymentMethod;
 import com.project.uber.model.Client;
 import com.project.uber.model.Driver;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
-public record OrderDto(
-        String origin,
-        String destination,
-        //aqui leva em conta o id do client
-       // BigDecimal value,//nao deve estar aqui pois o cliente nao preenche esse campo, o sistema preenche
-         String description,
-         String feedback
 
-        //Client client, //nao deve estar aqui pois o cliente nao preenche esse campo, o sistema preenche
-        //PaymentMethod payment //
-        //Driver driver, //nao deve estar aqui pois o cliente nao preenche esse campo, o sistema preenche
 
-) {}
+@Getter
+@Setter
+public class OrderDto {
+    private String origin;
+    private String destination;
+    private String description;
+    private String feedback;
 
+    public OrderDto(String origin, String destination, String description, String feedback) {
+        this.origin = origin;
+        this.destination = destination;
+        this.description = description;
+        this.feedback = feedback;
+    }
+
+
+}

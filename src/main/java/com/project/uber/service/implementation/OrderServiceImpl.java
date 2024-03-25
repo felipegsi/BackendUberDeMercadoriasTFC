@@ -16,6 +16,12 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import org.json.JSONObject;
+
 @Service
 public class OrderServiceImpl implements OrderService {
     @Autowired
@@ -23,6 +29,40 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private ClientService clientService;
+
+    @Override
+    public BigDecimal estimateOrderCost(String origin, String destination) {
+        OkHttpClient client = new OkHttpClient();
+
+        String[] originCoordinates = origin.split(",");
+        String[] destinationCoordinates = destination.split(",");
+
+        Request request = new Request.Builder()
+                .url("https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf6248b8fc3d76941643ee9de00a23820316b7&start="
+                        + originCoordinates[1] + "," + originCoordinates[0] + "&end=" + destinationCoordinates[1] + ","
+                        + destinationCoordinates[0])
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            String jsonData = response.body().string();
+            JSONObject jsonObject = new JSONObject(jsonData);
+            // Assumindo que a distância está dentro do primeiro objeto do array "segments"
+            // dentro do primeiro objeto "features", dentro da propriedade "properties".
+            int distanceInMeters = jsonObject.getJSONArray("features")
+                    .getJSONObject(0)
+                    .getJSONObject("properties")
+                    .getJSONArray("segments")
+                    .getJSONObject(0) // Assumindo que queremos o primeiro segmento
+                    .getInt("distance");
+
+            BigDecimal distanceInKm = new BigDecimal(distanceInMeters).divide(new BigDecimal(1000));
+            BigDecimal rate = new BigDecimal("2.0"); // taxa fixa por km
+
+            return distanceInKm.multiply(rate);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to estimate order cost", e);
+        }
+    }
 
     @Override
     public OrderDto saveOrder(OrderDto orderDto, Long clientId) {
@@ -33,9 +73,9 @@ public class OrderServiceImpl implements OrderService {
         OrderStatus status = OrderStatus.PENDING;
         Client client = clientService.getClientById(clientId);
 
-        Order order = new Order(orderDto.origin(), orderDto.destination(),
+        Order order = new Order(orderDto.getOrigin(), orderDto.getDestination(),
                 value, status, LocalDate.now(), LocalTime.now(),
-                orderDto.description(), orderDto.feedback(), client);
+                orderDto.getDescription(), orderDto.getFeedback(), client);
 
         orderRepository.save(order);
 
@@ -58,11 +98,12 @@ public class OrderServiceImpl implements OrderService {
         return new OrderDto(
                 order.getOrigin(),
                 order.getDestination(),
-               // order.getValue(),
+                // order.getValue(),
                 order.getDescription(),
                 order.getFeedback()
 
         );
     }
+
 
 }

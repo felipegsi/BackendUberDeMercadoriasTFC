@@ -8,9 +8,9 @@ import java.util.List;
 @Table(name = "drivers")
 @Data
 public class Driver extends User {
-    @Lob
-    @Column(name = "criminalRecord")
-    private byte[] criminalRecord; // Confirmado como byte[] para armazenar uma imagem
+    //@Lob
+   // @Column(name = "criminalRecord")//estava dando erro aqui por causa do tipo de dado
+    // private byte[] criminalRecord; // Confirmado como byte[] para armazenar uma imagem
 
     @Column(name = "salary")
     private double salary; // Alterado para BigDecimal
@@ -24,12 +24,13 @@ public class Driver extends User {
 
     public Driver(String name, String email, String password,
                   String phoneNumber, int taxPayerNumber, String street,
-                  String city, int postalCode, byte[] criminalRecord
+                  String city, int postalCode
+                  //byte[] criminalRecord
                   //List<Vehicle> vehicles
                   ) {
         super(name, email, password, phoneNumber, taxPayerNumber, street,
                 city, postalCode);
-        this.criminalRecord = criminalRecord;
+        //this.criminalRecord = criminalRecord;
        // this.vehicles = vehicles;
     }
 

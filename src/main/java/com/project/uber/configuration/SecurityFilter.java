@@ -2,7 +2,9 @@ package com.project.uber.configuration;
 
 
 import com.project.uber.model.Client;
+import com.project.uber.model.Driver;
 import com.project.uber.repository.ClientRepository;
+import com.project.uber.repository.DriverRepository;
 import com.project.uber.service.interfac.AuthenticationService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -25,6 +27,9 @@ public class SecurityFilter extends OncePerRequestFilter {
     @Autowired
     private ClientRepository clientRepository;
 
+    @Autowired
+    private DriverRepository driverRepository; // Adicione um repositório para Driver
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -34,10 +39,15 @@ public class SecurityFilter extends OncePerRequestFilter {
         if (token != null) {
             String email = authenticationService.getClientEmailFromToken(token);
             Client client = clientRepository.findByEmail(email);
+            Driver driver = driverRepository.findByEmail(email); // Carregue o Driver pelo email
 
-            var autentication = new UsernamePasswordAuthenticationToken(client, null, client.getAuthorities());
-
-            SecurityContextHolder.getContext().setAuthentication(autentication);
+            if (client != null) {
+                var autentication = new UsernamePasswordAuthenticationToken(client, null, client.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(autentication);
+            } else if (driver != null) {
+                var autentication = new UsernamePasswordAuthenticationToken(driver, null, driver.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(autentication);
+            }
         }
 
         filterChain.doFilter(request, response);

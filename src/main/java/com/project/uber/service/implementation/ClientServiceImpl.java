@@ -5,7 +5,6 @@ import com.project.uber.infra.exceptions.BusinessException;
 import com.project.uber.model.Client;
 import com.project.uber.repository.ClientRepository;
 import com.project.uber.service.interfac.ClientService;
-import com.project.uber.service.interfac.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,15 +12,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class ClientServiceImpl implements ClientService {
 
-
-    private final ClientRepository clientRepository;
-    private final PasswordEncoder passwordEncoder;
-
     @Autowired
-    public ClientServiceImpl(ClientRepository clientRepository, PasswordEncoder passwordEncoder) {
-        this.clientRepository = clientRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
+    private ClientRepository clientRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public ClientDto saveClient(ClientDto clientDto) {
@@ -62,7 +56,6 @@ public class ClientServiceImpl implements ClientService {
         return client;
     }
 
-
     @Override
     public void changePassword(Long clientId, String oldPassword, String newPassword) {
 
@@ -96,6 +89,7 @@ public class ClientServiceImpl implements ClientService {
         client.setCity(clientDto.city());
         client.setPostalCode(clientDto.postalCode());
         clientRepository.save(client);
+
         return new ClientDto(client.getName(), client.getEmail(), client.getPassword(),
                 client.getPhoneNumber(), client.getTaxPayerNumber(), client.getStreet(),
                 client.getCity(), client.getPostalCode());

@@ -21,4 +21,8 @@ public interface DriverService {
     public Driver getDriverById(Long driverId);
 
     public Driver getDriverByEmail(String email);
+
+    DriverDto viewProfile(Long driverId);
+
+    DriverDto editProfile(Long driverId, DriverDto driverDto);
 }

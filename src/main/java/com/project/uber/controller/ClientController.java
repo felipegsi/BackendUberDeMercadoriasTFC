@@ -15,6 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 //notas: logout no front-end, e no back-end, o token é invalidado.
@@ -24,29 +25,16 @@ import java.util.List;
 @RequestMapping("/client")
 public class ClientController {
 
-
-        private final AuthenticationManager authenticationManager;
-
-        private final AuthenticationService authenticationService;
-        private final ClientService clientService;
-        private final EmailServiceImpl emailService;
-        private final OrderService orderService;
-
-        @Autowired
-        public ClientController(AuthenticationManager authenticationManager,
-
-                                ClientService clientService,
-                                EmailServiceImpl emailService,
-                                OrderService orderService, AuthenticationService authenticationService) {
-            this.authenticationManager = authenticationManager;
-
-            this.clientService = clientService;
-            this.emailService = emailService;
-            this.orderService = orderService;
-            this.authenticationService = authenticationService;
-        }
-
-
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    @Autowired
+    private AuthenticationService authenticationService;
+    @Autowired
+    private ClientService clientService;
+    @Autowired
+    private EmailServiceImpl emailService;
+    @Autowired
+    private OrderService orderService;
 
     @PostMapping("/register")
     private ClientDto save(@RequestBody ClientDto clientDto) {
@@ -61,6 +49,9 @@ public class ClientController {
 
     @PostMapping("/login")
     public ResponseEntity<?> auth(@RequestBody AuthDto authDto) {
+        if (authDto == null || authDto.email() == null || authDto.password() == null) {
+            throw new BusinessException("Email and password are mandatory.");
+        }
         try {
             var usuarioAutenticationToken = new UsernamePasswordAuthenticationToken(authDto.email(), authDto.password());
             authenticationManager.authenticate(usuarioAutenticationToken);
@@ -68,15 +59,13 @@ public class ClientController {
             return ResponseEntity.ok(token);
         } catch (AuthenticationException e) {
             // Lançar BusinessException se a autenticação falhar
-            throw new BusinessException("Error registering client:" + e.getMessage());
+            throw new BusinessException("Error authenticating client: " + e.getMessage());
         }
     }
 
     @GetMapping("/viewProfile")
     public ResponseEntity<?> viewProfile(
-            @RequestHeader("Authorization") String authorizationHeader) {
-        // Extract the token from the header
-        String token = authorizationHeader.substring("Bearer ".length());
+            @RequestHeader("Authorization") String token) {
         // Valida o token e obtém o username (subject do token)
         Long clientId = validateTokenAndGetClientId(token);
 
@@ -87,9 +76,7 @@ public class ClientController {
     @PostMapping("/editProfile")
     public ResponseEntity<?> editProfile(
             @RequestBody ClientDto clientDto, // aqui eu que vou inserir os dados que quero alterar
-            @RequestHeader("Authorization") String authorizationHeader) {
-        // Extract the token from the header
-        String token = authorizationHeader.substring("Bearer ".length());
+            @RequestHeader("Authorization") String token) {
         // Valida o token e obtém o username (subject do token)
         Long clientId = validateTokenAndGetClientId(token);
 
@@ -97,28 +84,11 @@ public class ClientController {
         return new ResponseEntity<>(newClient, HttpStatus.OK);
     }
 
-    @GetMapping("/validate")
-    @ResponseStatus(HttpStatus.OK)
-    public String validate(@RequestHeader("Authorization") String authorizationHeader) {
-        // Extrai o token do cabeçal
-        try {
-            String token = authorizationHeader.substring("Bearer ".length());
-            String email = authenticationService.getClientEmailFromToken(token);
-            Long clientId = authenticationService.getClientIdFromToken(token);
-            return "Token válido para o cliente " + email + " com id " + clientId;
-        } catch (Exception e) {
-            throw new BusinessException("Invalid Token.");
-        }
-    }
-
     @PostMapping("/createOrder")
     public ResponseEntity<?> createOrder(@RequestBody OrderDto orderDto,
-                                         @RequestHeader("Authorization") String authorizationHeader) {
+                                         @RequestHeader("Authorization") String token) {
         try {
-            // Extrai o token do cabeçalho Authorization (assumindo que ele vem no formato "Bearer token")
-            String token = authorizationHeader.substring("Bearer ".length());
-
-            // Valida o token e obtém o username (subject do token)
+            // Valida o token e obtém o Id (subject do token)
             Long clientId = validateTokenAndGetClientId(token);
 
             if (orderDto == null) {
@@ -137,20 +107,22 @@ public class ClientController {
 
     private Long validateTokenAndGetClientId(String token) {
 
-        Long clientId = authenticationService.getClientIdFromToken(token);
+        // Extrai o token do cabeçalho Authorization (assumindo que ele vem no formato "Bearer token")
+        String tokenSliced = token.substring("Bearer ".length());
+
+        Long clientId = authenticationService.getClientIdFromToken(tokenSliced);
         if (clientId == null || clientId <= 0) {
             throw new BusinessException("Client not found.");
         }
         return clientId;
     }
+    //funçao apenas para validar se o token é valido e se o cliente existe
+
 
     @GetMapping("/orderHistory")
     public ResponseEntity<List<OrderDto>> getOrderHistory(
-            @RequestHeader("Authorization") String authorizationHeader) {
+            @RequestHeader("Authorization") String token) {
         try {
-            // Extrai o token do cabeçalho Authorization (assumindo que ele vem no formato "Bearer token")
-            String token = authorizationHeader.substring("Bearer ".length());
-
             // Valida o token e obtém o username (subject do token)
             Long clientId = validateTokenAndGetClientId(token);
 
@@ -164,10 +136,8 @@ public class ClientController {
     //""" deixar como claim principal o id do cliente"""
     // +++colocar as mensagens de erro
     @GetMapping("/deleteClient")
-    public ResponseEntity<?> deleteClient(@RequestHeader("Authorization") String authorizationHeader) {
-        try {
-            // Extrai o token do cabeçalho
-            String token = authorizationHeader.substring("Bearer ".length());
+    public ResponseEntity<?> deleteClient(@RequestHeader("Authorization") String token) {
+        try {// +++ so posso deletar um cliente se ele deletar todas as ordens
 
             // Valida o token e obtém o username (subject do token)
             Long clientId = validateTokenAndGetClientId(token);
@@ -183,18 +153,13 @@ public class ClientController {
     @PostMapping("/changePassword")
     public ResponseEntity<?> changePassword(
             @RequestBody ChangePasswordDto changePasswordDto,
-            @RequestHeader("Authorization") String authorizationHeader) {
-
-        // Extract the token from the header
-        String token = authorizationHeader.substring("Bearer ".length());
+            @RequestHeader("Authorization") String token) {
         // Valida o token e obtém o username (subject do token)
         Long clientId = validateTokenAndGetClientId(token);
 
         clientService.changePassword(clientId, changePasswordDto.oldPassword(), changePasswordDto.newPassword());
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
-
 
 
     // ---------------- Semi-implementado ----------------
@@ -221,7 +186,24 @@ public class ClientController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/estimateOrderCost")
+    public ResponseEntity<BigDecimal> estimateOrderCost(@RequestBody OrderDto orderDto ,
+                                                        @RequestHeader("Authorization") String token) {
+        try {
+            if (orderDto == null || orderDto.getOrigin() == null || orderDto.getDestination() == null) {
+                throw new BusinessException("Origin and destination are mandatory.");
+            }
 
+            if(validateTokenAndGetClientId(token) <= 0){
+                throw new BusinessException("Client not found.");
+            }
 
+            BigDecimal estimatedCost = orderService.estimateOrderCost(orderDto.getOrigin(), orderDto.getDestination());
+
+            return new ResponseEntity<>(estimatedCost, HttpStatus.OK);
+        } catch (BusinessException e) {
+            throw new BusinessException("Error estimating order cost: " + e.getMessage());
+        }
+    }
 
 }

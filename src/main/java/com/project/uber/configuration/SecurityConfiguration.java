@@ -20,15 +20,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfiguration {
 
-
-     private final SecurityFilter securityFilter;
-
     @Autowired
-    @Lazy
-    public SecurityConfiguration( SecurityFilter securityFilter) {
-
-        this.securityFilter = securityFilter;
-    }
+     private  SecurityFilter securityFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -39,14 +32,15 @@ public class SecurityConfiguration {
                         //.requestMatchers(HttpMethod.GET, "/usuarios/admin").hasRole("ADMIN")
                         //.requestMatchers(HttpMethod.GET, "/usuarios/user").hasRole("USER")
                         //so altera AQUI
+
                         .requestMatchers(HttpMethod.POST, "/client/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/client/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/client/orderHistory").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/client/deleteClient").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/client/sendSimpleMessage").permitAll()
+                        //.requestMatchers(HttpMethod.POST, "/client/orderHistory").permitAll()
+                        //.requestMatchers(HttpMethod.POST, "/client/deleteClient").permitAll()
+                        //.requestMatchers(HttpMethod.POST, "/client/sendSimpleMessage").permitAll()
                         .requestMatchers(HttpMethod.POST, "/driver/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/driver/login").permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().authenticated() //qualquer outra requisição precisa de autenticação e sera aceita se o token for valido
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                // .addFilterBefore(driverSecurityFilter, UsernamePasswordAuthenticationFilter.class)
