@@ -1,6 +1,7 @@
 package com.project.uber.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.project.uber.enums.Category;
 import com.project.uber.enums.OrderStatus;
 import com.project.uber.enums.PaymentMethod; // Certifique-se de que este enum está definido
 import jakarta.persistence.*;
@@ -51,6 +52,9 @@ public class Order {
     @JoinColumn(name = "client_id") // Chave estrangeira na tabela 'orders'
     private Client client;
 
+    @Column(nullable = false, length = 50) // Permita um feedback mais longo, se necessário
+    private Category category;
+
     // Campos adicionados conforme sugerido
     //@Enumerated(EnumType.STRING)
    // private PaymentMethod payment; // Supondo que você tenha um enum PaymentMethod
@@ -67,7 +71,9 @@ public class Order {
     // private Integer rating; // Considerando rating como um número
 
     //contructor
-    public Order(String origin, String destination, BigDecimal  value, OrderStatus status, LocalDate date, LocalTime time, String description, String feedback, Client client) {
+    public Order(String origin, String destination, BigDecimal  value,
+                 OrderStatus status, LocalDate date, LocalTime time,
+                 String description, String feedback, Client client, Category category) {
         this.origin = origin;
         this.destination = destination;
         this.value = value;
@@ -77,6 +83,7 @@ public class Order {
         this.description = description;
         this.feedback = feedback;
         this.client = client;
+        this.category = category;
     }
 
     public Order() {

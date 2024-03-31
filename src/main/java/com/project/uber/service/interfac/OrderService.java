@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface OrderService {
 
-    BigDecimal estimateOrderCost(String origin, String destination);
+    BigDecimal estimateOrderCost(OrderDto orderDto);
 
     public OrderDto saveOrder(OrderDto orderDto, Long clientId);
     public List<OrderDto> getClientOrderHistory(Long clientId);

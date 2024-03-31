@@ -84,6 +84,26 @@ public class ClientController {
         return new ResponseEntity<>(newClient, HttpStatus.OK);
     }
 
+    @PostMapping("/estimateOrderCost")
+    public ResponseEntity<BigDecimal> estimateOrderCost(@RequestBody OrderDto orderDto ,
+                                                        @RequestHeader("Authorization") String token) {
+        try {
+            if (orderDto == null || orderDto.getOrigin() == null || orderDto.getDestination() == null) {
+                throw new BusinessException("Origin and destination are mandatory.");
+            }
+
+            if(validateTokenAndGetClientId(token) <= 0){
+                throw new BusinessException("Client not found.");
+            }
+
+            BigDecimal estimatedCost = orderService.estimateOrderCost(orderDto);
+
+            return new ResponseEntity<>(estimatedCost, HttpStatus.OK);
+        } catch (BusinessException e) {
+            throw new BusinessException("Error estimating order cost: " + e.getMessage());
+        }
+    }
+
     @PostMapping("/createOrder")
     public ResponseEntity<?> createOrder(@RequestBody OrderDto orderDto,
                                          @RequestHeader("Authorization") String token) {
@@ -138,7 +158,6 @@ public class ClientController {
     @GetMapping("/deleteClient")
     public ResponseEntity<?> deleteClient(@RequestHeader("Authorization") String token) {
         try {// +++ so posso deletar um cliente se ele deletar todas as ordens
-
             // Valida o token e obtém o username (subject do token)
             Long clientId = validateTokenAndGetClientId(token);
 
@@ -147,7 +166,6 @@ public class ClientController {
         } catch (BusinessException e) {
             throw new BusinessException("Error deleting client " + e.getMessage());
         }
-
     }
 
     @PostMapping("/changePassword")
@@ -186,24 +204,6 @@ public class ClientController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/estimateOrderCost")
-    public ResponseEntity<BigDecimal> estimateOrderCost(@RequestBody OrderDto orderDto ,
-                                                        @RequestHeader("Authorization") String token) {
-        try {
-            if (orderDto == null || orderDto.getOrigin() == null || orderDto.getDestination() == null) {
-                throw new BusinessException("Origin and destination are mandatory.");
-            }
 
-            if(validateTokenAndGetClientId(token) <= 0){
-                throw new BusinessException("Client not found.");
-            }
-
-            BigDecimal estimatedCost = orderService.estimateOrderCost(orderDto.getOrigin(), orderDto.getDestination());
-
-            return new ResponseEntity<>(estimatedCost, HttpStatus.OK);
-        } catch (BusinessException e) {
-            throw new BusinessException("Error estimating order cost: " + e.getMessage());
-        }
-    }
 
 }
