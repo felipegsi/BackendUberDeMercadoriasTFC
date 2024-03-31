@@ -80,10 +80,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     public Long getClientIdFromToken(String token) {
 
-            if (token == null || token.isEmpty()) {
-                throw new IllegalArgumentException("Token is null or empty");
-            }
-            try {
+        if (token == null || token.isEmpty()) {
+            throw new IllegalArgumentException("Token is null or empty");
+        }
+        try {
             Algorithm algorithm = Algorithm.HMAC256("my-secret");
 
             DecodedJWT jwt = JWT.require(algorithm)

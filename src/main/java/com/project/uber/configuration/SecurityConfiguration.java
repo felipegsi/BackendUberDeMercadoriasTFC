@@ -21,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfiguration {
 
     @Autowired
-     private  SecurityFilter securityFilter;
+    private  SecurityFilter securityFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -35,15 +35,13 @@ public class SecurityConfiguration {
 
                         .requestMatchers(HttpMethod.POST, "/client/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/client/login").permitAll()
-                        //.requestMatchers(HttpMethod.POST, "/client/orderHistory").permitAll()
-                        //.requestMatchers(HttpMethod.POST, "/client/deleteClient").permitAll()
-                        //.requestMatchers(HttpMethod.POST, "/client/sendSimpleMessage").permitAll()
                         .requestMatchers(HttpMethod.POST, "/driver/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/driver/login").permitAll()
+
                         .anyRequest().authenticated() //qualquer outra requisição precisa de autenticação e sera aceita se o token for valido
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
-               // .addFilterBefore(driverSecurityFilter, UsernamePasswordAuthenticationFilter.class)
+                // .addFilterBefore(driverSecurityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

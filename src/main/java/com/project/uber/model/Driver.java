@@ -2,7 +2,6 @@ package com.project.uber.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import java.util.List;
 
 @Entity
 @Table(name = "drivers")
@@ -17,6 +16,9 @@ public class Driver extends User {
 
     @Column(name = "availability")
     private Boolean availability;
+
+    @Column(name = "is_online")
+    private boolean isOnline = false; // Offline por padrão
 
    // @OneToMany(mappedBy = "driver")
    // private List<Vehicle> vehicles; // Corrigido o mapeamento

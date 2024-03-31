@@ -14,13 +14,15 @@ public interface DriverService {
 
     public DriverDto saveDriver(DriverDto driverDto);
 
-  //  void acceptOrder(Long orderId, Long driverId, String driverEmail) throws BusinessException;
+    void acceptOrder(Long orderId, Long driverId, String driverEmail) throws BusinessException;
 
-    public void deleteDriver(Long driverId);
+    void deleteDriver(Long driverId);
+    void setDriverOnlineStatus(Long driverId, boolean isOnline) throws Exception;
 
-    public Driver getDriverById(Long driverId);
 
-    public Driver getDriverByEmail(String email);
+    Driver getDriverById(Long driverId);
+
+    Driver getDriverByEmail(String email);
 
     DriverDto viewProfile(Long driverId);
 

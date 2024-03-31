@@ -56,6 +56,51 @@ public class DriverController {
             throw new BusinessException("Error authenticating driver: " + e.getMessage());
         }
     }
+    @GetMapping("/deleteDriver")
+    public ResponseEntity<?> deleteDriver(@RequestHeader("Authorization") String token) {
+        try {// +++ so posso deletar um driver se ele deletar todas as ordens
+
+            // Valida o token e obtém o username (subject do token)
+            Long driverId = validateTokenAndGetDriverId(token);
+
+            driverService.deleteDriver(driverId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (BusinessException e) {
+            throw new BusinessException("Error deleting client " + e.getMessage());
+        }
+
+    }
+    @PostMapping("/acceptOrder/{orderId}")
+    public ResponseEntity<?> acceptOrder(@RequestHeader("Authorization") String token, @PathVariable Long orderId, @RequestParam String driverEmail) {
+        Long driverId = validateTokenAndGetDriverId(token);
+        try {
+            driverService.acceptOrder(orderId, driverId, driverEmail);
+            return ResponseEntity.ok().build();
+        } catch (BusinessException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @PutMapping("/online")
+    public ResponseEntity<?> setDriverOnline(@RequestHeader("Authorization") String token){
+        Long driverId = validateTokenAndGetDriverId(token);
+        try {
+            driverService.setDriverOnlineStatus(driverId, true);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/offline")
+    public ResponseEntity<?> setDriverOffline(@RequestHeader("Authorization") String token){
+        Long driverId = validateTokenAndGetDriverId(token);
+        try {
+            driverService.setDriverOnlineStatus(driverId, false);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
     @GetMapping("/viewProfile")
     public ResponseEntity<?> viewProfile(

@@ -40,12 +40,18 @@ public class DriverServiceImpl implements DriverService {
                 //        , newDriver.getCriminalRecord()
         );
     }
+    @Override
+    public void setDriverOnlineStatus(Long driverId, boolean isOnline) throws Exception {
+        Driver driver = driverRepository.findById(driverId)
+                .orElseThrow(() -> new Exception("Driver not found."));
+        driver.setOnline(isOnline);
+        driverRepository.save(driver);
+    }
 
     @Override
     public void deleteDriver(Long driverId) {
         driverRepository.deleteById(driverId);
     }
-
 
     @Override
     public Driver getDriverById(Long driverId) {
@@ -92,10 +98,13 @@ public class DriverServiceImpl implements DriverService {
                 driver.getCity(), driver.getPostalCode()
                 //        , driver.getCriminalRecord()
         );
-
-
     }
-
+    @Override
+    public void acceptOrder(Long orderId, Long driverId, String driverEmail) throws BusinessException {
+        Driver driver = driverRepository.findById(driverId).orElseThrow(() -> new BusinessException("Driver not found"));
+        driver.setId(orderId);
+        driverRepository.save(driver);
+    }
 
 }
 
