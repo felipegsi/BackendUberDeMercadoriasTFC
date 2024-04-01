@@ -1,13 +1,18 @@
 package com.project.uber.service.implementation;
 
 import com.project.uber.dtos.DriverDto;
+import com.project.uber.dtos.VehicleDto;
 import com.project.uber.infra.exceptions.BusinessException;
 import com.project.uber.model.Driver;
 import com.project.uber.repository.DriverRepository;
+import com.project.uber.repository.VehicleRepository;
 import com.project.uber.service.interfac.DriverService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.project.uber.model.Vehicle;
+
+import java.util.List;
 
 @Service
 public class DriverServiceImpl implements DriverService {
@@ -16,30 +21,75 @@ public class DriverServiceImpl implements DriverService {
     private DriverRepository driverRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private VehicleRepository vehicleRepository;
+
 
     @Override
     public DriverDto saveDriver(DriverDto driverDto) {
-
-        Driver driverAlredyExists = driverRepository.findByEmail(driverDto.email());
-
-        if (driverAlredyExists != null) {
+        // Verifica se o motorista já existe
+        Driver driverAlreadyExists = driverRepository.findByEmail(driverDto.email());
+        if (driverAlreadyExists != null) {
             throw new BusinessException("Driver already exists!");
         }
 
+        // Codifica a senha
         var passwordHash = passwordEncoder.encode(driverDto.password());
 
-        Driver newDriver = driverRepository.save(new Driver(driverDto.name(), driverDto.email(), passwordHash,
-                driverDto.phoneNumber(), driverDto.taxPayerNumber(), driverDto.street(),
-                driverDto.city(), driverDto.postalCode()
-                //, driverDto.criminalRecord()
-        ));//fazemos isso para nao obstruir nossa tabela de cliente e codificar a senha
+        // Cria uma nova entidade Driver e a salva
+        Driver newDriver = new Driver(
+                driverDto.name(),
+                driverDto.email(),
+                passwordHash,
+                driverDto.phoneNumber(),
+                driverDto.taxPayerNumber(),
+                driverDto.street(),
+                driverDto.city(),
+                driverDto.postalCode()
+        );
 
-        return new DriverDto(newDriver.getName(), newDriver.getEmail(), newDriver.getPassword(),
-                newDriver.getPhoneNumber(), newDriver.getTaxPayerNumber(), newDriver.getStreet(),
-                newDriver.getCity(), newDriver.getPostalCode()
-                //        , newDriver.getCriminalRecord()
+        // Salva o motorista no repositório
+        newDriver = driverRepository.save(newDriver);
+
+
+        // Se informações do veículo estiverem presentes, cria e salva o veículo
+        Vehicle vehicleDto = driverDto.vehicleDto();
+        if (vehicleDto != null) {
+            Vehicle vehicle = new Vehicle();
+            vehicle.setDriver(newDriver); // Associa o veículo ao novo motorista
+            vehicle.setYear(vehicleDto.getYear());
+            vehicle.setPlate(vehicleDto.getPlate());
+            vehicle.setBrand(vehicleDto.getBrand());
+            vehicle.setModel(vehicleDto.getModel());
+
+            vehicleRepository.save(vehicle);
+
+        }
+
+        // Retorna o DriverDto atualizado
+        return new DriverDto(
+                newDriver.getName(),
+                newDriver.getEmail(),
+                newDriver.getPassword(),
+                newDriver.getPhoneNumber(),
+                newDriver.getTaxPayerNumber(),
+                newDriver.getStreet(),
+                newDriver.getCity(),
+                newDriver.getPostalCode(),
+                vehicleDto // Aqui você pode precisar de um construtor atualizado ou um método setter
         );
     }
+    private VehicleDto convertToDto(Vehicle vehicle) {
+        // Implementa a lógica para converter uma entidade Vehicle para VehicleDto
+        return new VehicleDto(
+                vehicle.getYear(),
+                vehicle.getPlate(),
+                vehicle.getBrand(),
+                vehicle.getModel(),
+                vehicle.getDocumentPhoto()
+        );
+    }
+
     @Override
     public void setDriverOnlineStatus(Long driverId, boolean isOnline) throws Exception {
         Driver driver = driverRepository.findById(driverId)
@@ -72,8 +122,7 @@ public class DriverServiceImpl implements DriverService {
         Driver driver = getDriverById(driverId);
         return new DriverDto(driver.getName(), driver.getEmail(), driver.getPassword(),
                 driver.getPhoneNumber(), driver.getTaxPayerNumber(), driver.getStreet(),
-                driver.getCity(), driver.getPostalCode()
-                //        , driver.getCriminalRecord()
+                driver.getCity(), driver.getPostalCode(), driver.getVehicle()
         );
     }
 
@@ -95,8 +144,7 @@ public class DriverServiceImpl implements DriverService {
 
         return new DriverDto(driver.getName(), driver.getEmail(), driver.getPassword(),
                 driver.getPhoneNumber(), driver.getTaxPayerNumber(), driver.getStreet(),
-                driver.getCity(), driver.getPostalCode()
-                //        , driver.getCriminalRecord()
+                driver.getCity(), driver.getPostalCode(), driver.getVehicle()
         );
     }
     @Override

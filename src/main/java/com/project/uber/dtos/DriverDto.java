@@ -2,8 +2,6 @@ package com.project.uber.dtos;
 
 import com.project.uber.model.Vehicle;
 
-import java.util.List;
-
 public record DriverDto(String name,
                         String email,
                         String password,
@@ -11,7 +9,9 @@ public record DriverDto(String name,
                         int taxPayerNumber,
                         String street,
                         String city,
-                        int postalCode
-                       // byte[] criminalRecord evitar essa complexidade agora
-                      //  List<Vehicle> vehicles
-) { }
+                        int postalCode,
+
+                        // byte[] criminalRecord evitar essa complexidade agora
+                        Vehicle vehicleDto
+) {
+}

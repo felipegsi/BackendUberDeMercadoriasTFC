@@ -14,7 +14,7 @@ import java.time.LocalTime;
 
 @Entity
 @Data
-@Table(name = "orders") // Prefira usar um padrão consistente para nomes de tabelas e colunas, seja snake_case ou camelCase
+@Table(name = "orders") //padrão consistente para nomes de tabelas e colunas, seja snake_case ou camelCase
 public class Order {
 
     @Id

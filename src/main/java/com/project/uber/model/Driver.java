@@ -3,6 +3,8 @@ package com.project.uber.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Entity
 @Table(name = "drivers")
 @Data
@@ -14,26 +16,23 @@ public class Driver extends User {
     @Column(name = "salary")
     private double salary; // Alterado para BigDecimal
 
-    @Column(name = "availability")
-    private Boolean availability;
-
     @Column(name = "is_online")
     private boolean isOnline = false; // Offline por padrão
 
-   // @OneToMany(mappedBy = "driver")
-   // private List<Vehicle> vehicles; // Corrigido o mapeamento
+    @OneToOne(mappedBy = "driver")
+   private Vehicle vehicle; // Corrigido o mapeamento
 
 
     public Driver(String name, String email, String password,
                   String phoneNumber, int taxPayerNumber, String street,
-                  String city, int postalCode
+                  String city, int postalCode,
                   //byte[] criminalRecord
-                  //List<Vehicle> vehicles
+                  Vehicle vehicle
                   ) {
         super(name, email, password, phoneNumber, taxPayerNumber, street,
                 city, postalCode);
         //this.criminalRecord = criminalRecord;
-       // this.vehicles = vehicles;
+       this.vehicle = vehicle;
     }
 
     public Driver() {
@@ -41,4 +40,8 @@ public class Driver extends User {
     }
 
 
+    public Driver(String name, String email, String passwordHash, String s, int i, String street, String city, int i1) {
+        super(name, email, passwordHash, s, i, street,
+                city, i1);
+    }
 }
