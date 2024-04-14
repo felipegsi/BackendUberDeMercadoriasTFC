@@ -35,7 +35,7 @@ O projeto desenvolve uma plataforma digital para otimizar o transporte de mercad
 
 - **Frontend:** Flutter
 - **Backend:** Spring Boot
-- **Base de Dados:** MySQL
+- **Base de Dados:** PostgreSQL
 - **IDEs:** IntelliJ IDEA, Android Studio
 - **Controle de Versão:** Git, hospedado no GitHub
 
