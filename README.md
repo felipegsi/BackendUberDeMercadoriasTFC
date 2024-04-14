@@ -19,9 +19,9 @@ Este projeto tem como objetivo desenvolver uma plataforma digital inovadora para
 - **Universidade Lusófona de Lisboa**
 - **Engenharia Informática**
 
-## Data
+## Data de início
 
-- **19 de Janeiro de 2024**
+- **Setembro de 2023**
 
 ## Direitos de Cópia
 
