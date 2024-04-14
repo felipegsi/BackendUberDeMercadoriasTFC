@@ -1,11 +1,25 @@
 package com.project.uber.dtos;
 
+import lombok.Getter;
+import lombok.Setter;
+
 public class VehicleDto {
+    // Getters and setters
+    @Setter
+    @Getter
     private int year;
+    @Setter
+    @Getter
     private String plate;
+    @Getter
     private String brand;
+    @Getter
+    @Setter
     private String model;
     private byte[] documentPhoto;
+    @Getter
+    @Setter
+    private Double capacity;
 
     // Default constructor
     public VehicleDto() {}
@@ -19,44 +33,12 @@ public class VehicleDto {
         this.documentPhoto = documentPhoto;
     }
 
-    // Getters and setters
-    public int getYear() {
-        return year;
-    }
-
-    public void setYear(int year) {
+    public VehicleDto(int year, String brand, String plate, String model, Double capacity) {
         this.year = year;
-    }
-
-    public String getPlate() {
-        return plate;
-    }
-
-    public void setPlate(String plate) {
         this.plate = plate;
-    }
-
-    public String getBrand() {
-        return brand;
-    }
-
-    public void setBrand(String brand) {
         this.brand = brand;
-    }
-
-    public String getModel() {
-        return model;
-    }
-
-    public void setModel(String model) {
         this.model = model;
+        this.capacity = capacity;
     }
 
-    public byte[] getDocumentPhoto() {
-        return documentPhoto;
-    }
-
-    public void setDocumentPhoto(byte[] documentPhoto) {
-        this.documentPhoto = documentPhoto;
-    }
 }

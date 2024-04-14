@@ -10,15 +10,13 @@ import lombok.Setter;
 
 @Getter
 @Setter
-//@EqualsAndHashCode(exclude = {"orders"})  //n precisa do jsonignore
 @NoArgsConstructor
 @Entity
 @Table(name = "clients")
 public class Client extends User {
 
-    //lista de pedidos
     @JsonIgnore
-    @OneToMany(mappedBy = "client")
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
     private List<Order> orders;
 
     public Client(String name, String email, String password,

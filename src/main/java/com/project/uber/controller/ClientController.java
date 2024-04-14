@@ -2,6 +2,7 @@ package com.project.uber.controller;
 
 import com.project.uber.dtos.*;
 import com.project.uber.infra.exceptions.BusinessException;
+import com.project.uber.model.Order;
 import com.project.uber.service.implementation.EmailServiceImpl;
 import com.project.uber.service.interfac.AuthenticationService;
 import com.project.uber.service.interfac.ClientService;
@@ -18,13 +19,21 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.List;
 
-//notas: logout no front-end, e no back-end, o token é invalidado.
-//implementar a mudança de senha
-//implementar a recuperação de senha
+//notes: logout on the front-end, and on the back-end, the token is invalidated.
+//implement password change
+//implement password recovery
+
+// This Java code is part of a Spring Boot project located in the package com.project.uber.controller.
+// It includes several imports from the project's own structure as well as Spring framework components.
+
+// This class, ClientController, is annotated with @RestController, indicating it's a Spring MVC controller with REST API responses.
+// The @RequestMapping("/client") annotation defines a base URI for all request mappings inside this controller.
 @RestController
 @RequestMapping("/client")
 public class ClientController {
 
+    // Spring's @Autowired annotation is used to auto-wire beans into the class.
+    // Below are the fields for services and components used in this controller.
     @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
@@ -36,55 +45,61 @@ public class ClientController {
     @Autowired
     private OrderService orderService;
 
-    @PostMapping("/register")
-    private ClientDto save(@RequestBody ClientDto clientDto) {
+    // This method handles POST requests to "/register" and registers a new client.
+    @PostMapping("/register") // This annotation marks the method to accept POST requests on the path "/register".
+    private ClientDto save(@RequestBody ClientDto clientDto) { // @RequestBody annotation indicates a method parameter should be bound to the body of the web request.
         try {
-            // Código para registrar o cliente
+            // Attempts to save the client and return the saved client data.
             return clientService.saveClient(clientDto);
         } catch (BusinessException e) {
-            // Retorna um erro 400 (BAD REQUEST) com a mensagem de erro
+            // If there's a business logic exception, it rethrows it with a custom message.
             throw new BusinessException("Error registering client: " + e.getMessage());
         }
     }
 
+    // This method handles user authentication with a POST request to "/login".
     @PostMapping("/login")
-    public ResponseEntity<?> auth(@RequestBody AuthDto authDto) {
+    public ResponseEntity<?> auth(@RequestBody AuthDto authDto) { // ResponseEntity is used to represent the whole HTTP response: status code, headers, and body.
         if (authDto == null || authDto.email() == null || authDto.password() == null) {
             throw new BusinessException("Email and password are mandatory.");
         }
         try {
+            // Authentication logic, including the creation and verification of authentication tokens.
             var usuarioAutenticationToken = new UsernamePasswordAuthenticationToken(authDto.email(), authDto.password());
             authenticationManager.authenticate(usuarioAutenticationToken);
             String token = authenticationService.getClientTokenJwt(authDto);
             return ResponseEntity.ok(token);
         } catch (AuthenticationException e) {
-            // Lançar BusinessException se a autenticação falhar
+            // Handles authentication failures.
             throw new BusinessException("Error authenticating client: " + e.getMessage());
         }
     }
 
-    @GetMapping("/viewProfile")
+    // This method returns the client profile based on the provided JWT token.
+    @GetMapping("/viewProfile") // Handles GET requests for "/viewProfile".
     public ResponseEntity<?> viewProfile(
-            @RequestHeader("Authorization") String token) {
-        // Valida o token e obtém o username (subject do token)
+            @RequestHeader("Authorization") String token) { // @RequestHeader extracts the 'Authorization' header from the request.
+        // Validates the token and retrieves the client ID from it.
         Long clientId = validateTokenAndGetClientId(token);
 
         ClientDto clientDto = clientService.viewProfile(clientId);
         return new ResponseEntity<>(clientDto, HttpStatus.OK);
     }
 
-    @PostMapping("/editProfile")
+    // This method allows clients to edit their profiles.
+    @PostMapping("/editProfile") // Handles POST requests to "/editProfile".
     public ResponseEntity<?> editProfile(
-            @RequestBody ClientDto clientDto, // aqui eu que vou inserir os dados que quero alterar
+            @RequestBody ClientDto clientDto, // ClientDto contains new profile details.
             @RequestHeader("Authorization") String token) {
-        // Valida o token e obtém o username (subject do token)
+        // Same token validation as in the previous methods.
         Long clientId = validateTokenAndGetClientId(token);
 
         ClientDto newClient = clientService.editProfile(clientId, clientDto);
         return new ResponseEntity<>(newClient, HttpStatus.OK);
     }
 
-    @PostMapping("/estimateOrderCost")
+    // This method estimates the cost of an order based on its details.
+    @PostMapping("/estimateOrderCost") // Handles POST requests to "/estimateOrderCost".
     public ResponseEntity<BigDecimal> estimateOrderCost(@RequestBody OrderDto orderDto ,
                                                         @RequestHeader("Authorization") String token) {
         try {
@@ -96,38 +111,41 @@ public class ClientController {
                 throw new BusinessException("Client not found.");
             }
 
+            // Calculates the estimated cost of an order.
             BigDecimal estimatedCost = orderService.estimateOrderCost(orderDto);
 
             return new ResponseEntity<>(estimatedCost, HttpStatus.OK);
         } catch (BusinessException e) {
+            // Handles exceptions related to cost estimation.
             throw new BusinessException("Error estimating order cost: " + e.getMessage());
         }
     }
 
-    @PostMapping("/createOrder")
+    // This method creates a new order for a client.
+    @PostMapping("/createOrder") // Handles POST requests to "/createOrder".
     public ResponseEntity<?> createOrder(@RequestBody OrderDto orderDto,
                                          @RequestHeader("Authorization") String token) {
         try {
-            // Valida o token e obtém o Id (subject do token)
+            // Validates token and gets client ID.
             Long clientId = validateTokenAndGetClientId(token);
 
             if (orderDto == null) {
                 throw new BusinessException("Order not found.");
             }
 
-            // Cria o pedido usando o email obtido do token
-            OrderDto order = orderService.saveOrder(orderDto, clientId);
-
-            // Retorna a entidade Order recém-criada ou outro DTO que represente o resultado do pedido
+            // Creates the order and returns the new order details.
+            Order order = orderService.saveOrder(orderDto, clientId);
             return ResponseEntity.status(HttpStatus.CREATED).body(order);
         } catch (BusinessException e) {
-            throw new BusinessException("Error creating order " + e.getMessage());
+            // Handles exceptions during order creation.
+            throw new BusinessException("Error creating order: " + e.getMessage());
         }
     }
 
+    // This method validates the JWT token and extracts the client ID from it.
     private Long validateTokenAndGetClientId(String token) {
 
-        // Extrai o token do cabeçalho Authorization (assumindo que ele vem no formato "Bearer token")
+        // Assumes the token is prefixed by "Bearer ", which is typical in HTTP authorization headers.
         String tokenSliced = token.substring("Bearer ".length());
 
         Long clientId = authenticationService.getClientIdFromToken(tokenSliced);
@@ -136,70 +154,56 @@ public class ClientController {
         }
         return clientId;
     }
-    //funçao apenas para validar se o token é valido e se o cliente existe
 
-
-    @GetMapping("/orderHistory")
-    public ResponseEntity<List<OrderDto>> getOrderHistory(
+    // This method retrieves the order history for a client based on their token.
+    @GetMapping("/orderHistory") // Handles GET requests to "/orderHistory".
+    public ResponseEntity<List<Order>> getOrderHistory(
             @RequestHeader("Authorization") String token) {
         try {
-            // Valida o token e obtém o username (subject do token)
+            // Validates token and retrieves client ID.
             Long clientId = validateTokenAndGetClientId(token);
 
-            List<OrderDto> orderHistory = orderService.getClientOrderHistory(clientId);
+            // Retrieves and returns the client's order history.
+            List<Order> orderHistory = orderService.getClientOrderHistory(clientId);
             return new ResponseEntity<>(orderHistory, HttpStatus.OK);
         } catch (BusinessException e) {
+            // Handles exceptions during retrieval of order history.
             throw new BusinessException(e.getMessage());
         }
     }
 
-    //""" deixar como claim principal o id do cliente"""
-    // +++colocar as mensagens de erro
-    @GetMapping("/deleteClient")
+    // This method deletes a client's account.
+    @GetMapping("/deleteClient") // Handles GET requests to "/deleteClient".
     public ResponseEntity<?> deleteClient(@RequestHeader("Authorization") String token) {
-        try {// +++ so posso deletar um cliente se ele deletar todas as ordens
-            // Valida o token e obtém o username (subject do token)
+        try {
+            // Validates token and retrieves client ID. Ensures all orders are deleted before proceeding with client deletion.
             Long clientId = validateTokenAndGetClientId(token);
 
             clientService.deleteClient(clientId);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (BusinessException e) {
+            // Handles exceptions during client deletion.
             throw new BusinessException("Error deleting client " + e.getMessage());
         }
     }
 
+    // This method handles password changes for a client.
     @PostMapping("/changePassword")
     public ResponseEntity<?> changePassword(
-            @RequestBody ChangePasswordDto changePasswordDto,
+            @RequestBody ChangePasswordDto changePasswordDto, // Contains old and new passwords.
             @RequestHeader("Authorization") String token) {
-        // Valida o token e obtém o username (subject do token)
+        // Validates token and retrieves client ID.
         Long clientId = validateTokenAndGetClientId(token);
 
+        // Changes the client's password.
         clientService.changePassword(clientId, changePasswordDto.oldPassword(), changePasswordDto.newPassword());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
-    // ---------------- Semi-implementado ----------------
-
-    /*
-    1. Primeiro, você precisa verificar se o e-mail fornecido existe no banco de dados. Se não existir, você pode retornar um erro.
-    2. Se o e-mail existir, você pode gerar um token de redefinição de senha. Este token deve ser único e temporário.
-    3. Em seguida, você precisa enviar este token para o e-mail do usuário. Você pode usar um serviço de e-mail para fazer isso.
-    4. Quando o usuário clicar no link enviado para o e-mail, ele será redirecionado para uma página onde poderá inserir a nova senha. Esta página deve ser implementada no front-end.
-    5. No back-end, você precisa de um método para validar o token e redefinir a senha.
-    */
-
-    @PostMapping("/recoverPassword")
-    public ResponseEntity<?> recoverPassword(
-            @RequestBody String email) {
-        // Código para recuperar a senha
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-
+    // This method sends a simple email message.
     @PostMapping("/sendSimpleMessage")
     public ResponseEntity<Void> sendSimpleMessage(@RequestBody EmailDto emailDto) {
+        // Sends an email message using the EmailServiceImpl.
         emailService.sendSimpleMessage(emailDto);
         return ResponseEntity.ok().build();
     }

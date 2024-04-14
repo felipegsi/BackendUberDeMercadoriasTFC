@@ -12,13 +12,12 @@ import java.util.List;
 
 public interface DriverService {
 
-    public DriverDto saveDriver(DriverDto driverDto);
+    DriverDto saveDriver(DriverDto driverDto);
 
     void acceptOrder(Long orderId, Long driverId, String driverEmail) throws BusinessException;
 
     void deleteDriver(Long driverId);
     void setDriverOnlineStatus(Long driverId, boolean isOnline) throws Exception;
-
 
     Driver getDriverById(Long driverId);
 
@@ -27,4 +26,12 @@ public interface DriverService {
     DriverDto viewProfile(Long driverId);
 
     DriverDto editProfile(Long driverId, DriverDto driverDto);
+
+    void changePassword(Long clientId, String oldPassword, String newPassword);
+
+    List<DriverDto> findAvailableDrivers();
+
+    Driver selectDriverForOrder(Order order, List<Driver> availableDrivers);
+
+    void updateDriverLocationAndStatus(Long driverId, String location, boolean isOnline);
 }

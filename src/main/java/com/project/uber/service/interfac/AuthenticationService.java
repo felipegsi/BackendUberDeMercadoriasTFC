@@ -8,7 +8,6 @@ public interface AuthenticationService extends UserDetailsService {
     public String getClientTokenJwt(AuthDto authDto);
     public String getClientEmailFromToken(String token);
     public Long getClientIdFromToken(String token);
-
     public String getDriverTokenJwt(AuthDto authDto);
     public String getDriverEmailFromToken(String token);
     public Long getDriverIdFromToken(String token);

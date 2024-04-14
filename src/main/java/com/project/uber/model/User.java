@@ -34,7 +34,7 @@ public abstract class User implements UserDetails {
     @Column(nullable = false, length = 20)
     private int postalCode;
 
-    //@Transient //apenas fica salvo no frontend a imagem
+    //@Transient //saved in the database as a blob, but not as a column, only saved in the front-end
     //private byte[] profileImage;
 
     //@Column(nullable = false)
@@ -42,7 +42,7 @@ public abstract class User implements UserDetails {
 
     public User(String name, String email, String password,
                 String phoneNumber, int taxPayerNumber,
-                String street, String city, int postalCode) {// contrutor com todos os atributos
+                String street, String city, int postalCode) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -51,22 +51,8 @@ public abstract class User implements UserDetails {
         this.street = street;
         this.city = city;
         this.postalCode = postalCode;
-        //this.role = role;
     }
 
-    /*public User(String name, String email , String phoneNumber, //construtor sem a password
-                int taxPayerNumber, String street,
-                String city, int postalCode) {
-        this.name = name;
-        this.email = email;
-        //this.password = password;
-        this.phoneNumber = phoneNumber;
-        this.taxPayerNumber = taxPayerNumber;
-        this.street = street;
-        this.city = city;
-        this.postalCode = postalCode;
-        //this.role = role;
-    }*/
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;

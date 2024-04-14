@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
-    // Método existente
     List<Order> findByClientId(Long clientId);
+    List<Order> findByDriverId(Long driverId);
 
 }

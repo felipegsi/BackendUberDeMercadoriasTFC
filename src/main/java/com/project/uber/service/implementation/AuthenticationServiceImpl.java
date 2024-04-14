@@ -25,37 +25,43 @@ import com.project.uber.service.interfac.AuthenticationService;
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
 
+    // The ClientRepository is autowired, which means Spring will automatically inject an instance of ClientRepository here.
     @Autowired
     private ClientRepository clientRepository;
 
+    // The DriverRepository is autowired, which means Spring will automatically inject an instance of DriverRepository here.
     @Autowired
-    private DriverRepository driverRepository; // Adicione um DriverRepository
+    private DriverRepository driverRepository;
 
+    // This method is used to load a user by their email. It first tries to find a client with the given email.
+// If no client is found, it tries to find a driver with the given email.
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         UserDetails userDetails = clientRepository.findByEmail(email);
         if (userDetails == null) {
-            userDetails = driverRepository.findByEmail(email); // Tente carregar o Driver se o Client não for encontrado
+            userDetails = driverRepository.findByEmail(email);
         }
         return userDetails;
     }
 
-    // --------------------------- CLIENT ---------------------------
+    // This method is used to generate a JWT token for a client. It first finds the client with the given email,
+// then calls another method to generate the token.
     @Override
     public String getClientTokenJwt(AuthDto authDto) {
         Client client = clientRepository.findByEmail(authDto.email());
         return generateClientTokenJwt(client);
     }
 
-    // fgsgasggargsgrgar - email, id , senha, telefone, cpf, rua, cidade, cep
+    // This method generates a JWT token for a client. It uses the client's email as the subject of the token,
+// and includes the client's ID as a claim. The token is signed with a secret key and has an expiration date.
     public String generateClientTokenJwt(Client client) {
         try {
             Algorithm algorithm = Algorithm.HMAC256("my-secret");
 
             return JWT.create()
                     .withIssuer("auth-api")
-                    .withSubject(client.getEmail()) // CONSIDERAR ALTERAR PARA O ID DO CLIENTE
-                    .withClaim("clientId", client.getId()) // Adicione o ID do cliente como uma claim
+                    .withSubject(client.getEmail())
+                    .withClaim("clientId", client.getId())
                     .withExpiresAt(generateExpirationDate())
                     .sign(algorithm);
         } catch (JWTCreationException exception) {
@@ -63,6 +69,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
+    // This method is used to get the client's email from a token. It verifies the token using the same secret key that was used to sign it.
     public String getClientEmailFromToken(String token) {
         try {
             Algorithm algorithm = Algorithm.HMAC256("my-secret");
@@ -78,6 +85,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
+    // This method is used to get the client's ID from a token. It verifies the token using the same secret key that was used to sign it.
     public Long getClientIdFromToken(String token) {
 
         if (token == null || token.isEmpty()) {
@@ -98,21 +106,24 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
+    // This method generates an expiration date for the JWT token. The token will expire 8 hours from the current time.
     private Instant generateExpirationDate() {
         return LocalDateTime.now()
                 .plusHours(8)
                 .toInstant(ZoneOffset.of("-03:00"));
     }
 
-
     // --------------------------- DRIVER ---------------------------
 
-
+    // This method is used to generate a JWT token for a driver. It first finds the driver with the given email,
+// then calls another method to generate the token.
     public String getDriverTokenJwt(AuthDto authDto) {
         Driver driver = driverRepository.findByEmail(authDto.email());
         return generateDriverTokenJwt(driver);
     }
 
+    // This method generates a JWT token for a driver. It uses the driver's email as the subject of the token,
+// and includes the driver's ID as a claim. The token is signed with a secret key and has an expiration date.
     public String generateDriverTokenJwt(Driver driver) {
         try {
             Algorithm algorithm = Algorithm.HMAC256("my-secret");
@@ -128,6 +139,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
+    // This method is used to get the driver's email from a token. It verifies the token using the same secret key that was used to sign it.
     public String getDriverEmailFromToken(String token) {
         try {
             Algorithm algorithm = Algorithm.HMAC256("my-secret");
@@ -143,6 +155,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
+    // This method is used to get the driver's ID from a token. It verifies the token using the same secret key that was used to sign it.
     public Long getDriverIdFromToken(String token) {
         try {
             if (token == null || token.isEmpty()) {

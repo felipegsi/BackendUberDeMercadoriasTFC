@@ -27,7 +27,10 @@ public class Order {
     @Column(nullable = false, length = 150)
     private String destination;
 
-    @Column(nullable = true) // Ajuste precision e scale conforme necessário
+    @Embedded
+    private GeoPoint pickupLocation;
+
+    @Column(nullable = false) // Ajuste precision e scale conforme necessário ++
     private BigDecimal  value; // BigDecimal é adequado para valores monetários
 
     @Enumerated(EnumType.STRING)
@@ -69,6 +72,12 @@ public class Order {
 
     // @Column(nullable = true) // Avaliações podem não estar presentes imediatamente
     // private Integer rating; // Considerando rating como um número
+
+
+    @ManyToOne
+    @JoinColumn(name = "driver_id") // Define a coluna de chave estrangeira para Driver
+    private Driver driver;
+
 
     //contructor
     public Order(String origin, String destination, BigDecimal  value,
