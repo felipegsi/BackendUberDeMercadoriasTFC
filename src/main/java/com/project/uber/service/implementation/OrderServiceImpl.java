@@ -54,7 +54,7 @@ public class OrderServiceImpl implements OrderService {
 
         // Builds the HTTP request for the routing API.
         Request request = new Request.Builder()
-                .url("https://api.openrouteservice.org/v2/directions/driving-car?api_key=<API_KEY>&start="
+                .url("https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf6248b8fc3d76941643ee9de00a23820316b7&start="
                         + originCoordinates[1] + "," + originCoordinates[0] + "&end=" + destinationCoordinates[1] + ","
                         + destinationCoordinates[0])
                 .build();
