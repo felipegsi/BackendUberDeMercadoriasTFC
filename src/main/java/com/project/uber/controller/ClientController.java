@@ -3,6 +3,7 @@ package com.project.uber.controller;
 import com.project.uber.dtos.*;
 import com.project.uber.enums.Category;
 import com.project.uber.infra.exceptions.BusinessException;
+import com.project.uber.model.Driver;
 import com.project.uber.model.Order;
 import com.project.uber.service.implementation.EmailServiceImpl;
 import com.project.uber.service.interfac.AuthenticationService;
@@ -247,5 +248,14 @@ public class ClientController {
 
 
 
+    @PostMapping("/assignOrderToDriver")
+    public ResponseEntity<Driver> assignOrderToDriver(@RequestBody Long orderId) {
+        try {
+            Driver driver = orderService.assignOrderToDriver(orderId);
+            return new ResponseEntity<>(driver, HttpStatus.OK);
+        } catch (BusinessException e) {
+            throw new BusinessException("Error assign order to driver " + e.getMessage());
+        }
+    }
 
 }
